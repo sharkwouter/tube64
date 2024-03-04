@@ -18,7 +18,7 @@ tlsf_t tlsf=NULL;
 
 void Allocator_Init(void)
 {
- #ifdef __linux__
+ #if defined(__linux__) || defined(__PSP__)
 
  HEAP_MEMORY=(char*)memalign(HEAP_MEMORY_SIZE,HEAP_MEMORY_SIZE);
 
@@ -37,7 +37,7 @@ void Allocator_Init(void)
 
 void Allocator_DeInit(void)
 {
- #ifdef __linux__
+ #if defined(__linux__) || defined(__PSP__)
 
  free(HEAP_MEMORY);
 

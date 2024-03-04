@@ -26,24 +26,24 @@
 
 #endif
 
-#if defined(__linux__) || defined(__EMSCRIPTEN__)
+#if defined(__linux__) || defined(__EMSCRIPTEN__) || defined(__PSP__)
 
-#include <termios.h>
+//#include <termios.h>
 #include <unistd.h>
 
 #define stricmp strcasecmp
 
 int getch(void) //reads from keypress, doesn't echo
 {
-    struct termios oldattr, newattr;
-    int ch;
-    tcgetattr( STDIN_FILENO, &oldattr );
-    newattr = oldattr;
-    newattr.c_lflag &= ~( ICANON | ECHO );
-    tcsetattr( STDIN_FILENO, TCSANOW, &newattr );
-    ch = getchar();
-    tcsetattr( STDIN_FILENO, TCSANOW, &oldattr );
-    return ch;
+    // struct termios oldattr, newattr;
+    // int ch;
+    // tcgetattr( STDIN_FILENO, &oldattr );
+    // newattr = oldattr;
+    // newattr.c_lflag &= ~( ICANON | ECHO );
+    // tcsetattr( STDIN_FILENO, TCSANOW, &newattr );
+    // ch = getchar();
+    // tcsetattr( STDIN_FILENO, TCSANOW, &oldattr );
+    return 1;
 }
 
 void fixfilename(char *d,char *s)
@@ -200,18 +200,18 @@ int CPP_count_swamp_anims(u8 a1);							//OK
 
 char aHighScoresNNjo[]="     HIGH SCORES/n/nJONTY.........1000000/nMARK...........100000/nGLENN...........10000/nSEAN.............1000/nDARREN...........1000/nRUSSELL...........100/nDANIEL.............10/nSIMON...............8/nALEX................6/nRICHARD.............0/n\0\x90";
 
-int SCALE=1; //для масштабирования окна
+int SCALE=1; //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 
-u8 Palette[256*3];         //эмуляция палитры VGA 6:6:6
-u16 PAL16[256];            //сконверченная палитра в 16-битные цвета RGB 5:6:5
+u8 Palette[256*3];         //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ VGA 6:6:6
+u16 PAL16[256];            //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ 16-пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ RGB 5:6:5
 
-u16 VRAMBuffer[320*200]; //видеобуфер для SDL2
+u16 VRAMBuffer[320*200]; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ SDL2
 
 static SDL_Renderer *renderer=NULL;
 static SDL_Window   *window  =NULL;
 static SDL_Texture  *texture =NULL;
 
-void ToScreen(void) //переброс видеобуфера игры в видеобуфер SDL2 с конверсией палитры и отправкой в окно
+void ToScreen(void) //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ SDL2 пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅ
 {
  for(int i=0;i<320*200;i++)VRAMBuffer[i]= /* ((u8*)WScreen)[i]; */ PAL16[((u8*)(SP<u8>)WScreen)[i]]; //Paletted 256 col. to Direct 64K col.
 
@@ -223,7 +223,7 @@ void ToScreen(void) //переброс видеобуфера игры в видеобуфер SDL2 с конверсией п
 
 //---------------------------------------------------------------------------------
 
-void ReadConfig(void) //считывает конфигурацию из файла. Если файла нет, то дефолтная конфигурация
+void ReadConfig(void) //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ. пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 {
  FILE *f=fopen("tube.cfg","rt");
  if(!f)
@@ -233,7 +233,7 @@ void ReadConfig(void) //считывает конфигурацию из файла. Если файла нет, то дефо
  }
 
  char nanobuf[64];
- int tmp;         //ради совместимости используется размер int. Потому что fscanf() в short(%hx) и char(%hhx) может быть несовместим с другими компиляторами!
+ int tmp;         //пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ int. пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ fscanf() пїЅ short(%hx) пїЅ char(%hhx) пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ!
 
  memset(nanobuf,0,sizeof(nanobuf));
  fgets(nanobuf,sizeof(nanobuf),f);
@@ -287,13 +287,13 @@ int main(int argc, char *argv[]) //FINAL
  Allocator_Init();
 
  ReadConfig();
- LoadDSEG();   //загрузка сегментов данных игры
+ LoadDSEG();   //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 
- tabgen=0;     //=1 отладка
+ tabgen=0;     //=1 пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
- CPP_setup_game();		//загрузка, инит ресурсов
+ CPP_setup_game();		//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
- CPP_game();			//сама игра
+ CPP_game();			//пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
 
  CPP_reset_game();						
  CPP_ResetMemory();
@@ -354,13 +354,13 @@ void CPP_game(void) //FINAL
   {
     start_time=SDL_GetTicks();
 
-    CPP_KInt(); //обработчик  клавиатуры
+    CPP_KInt(); //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ  пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
     CPP_control_game();
 
     switch ( game_mode )
     {
-      case 0:			//стейт игры
+      case 0:			//пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ
         if ( !game_pause )
         {
           MY_StartMusic(1, 0x7Fu);
@@ -868,7 +868,7 @@ int CPP_enter_scores(void) //FINAL
   return CPP_new_starfield(scrollpos[0], 256);
 }
 
-int CPP_high_tube(void) //FINAL Знакозависимая функция. Принудительно задал signed там, где надо. Иначе корректно работала только при all chars signed в настройках компилятора.
+int CPP_high_tube(void) //FINAL пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ signed пїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ. пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ all chars signed пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ.
 {
   signed char *v0; // eax
   signed char *v1; // eax
@@ -939,7 +939,7 @@ int CPP_high_tube(void) //FINAL Знакозависимая функция. Принудительно задал sign
   else
   {
   //while ( HIBYTE(scrollpos[0]) > 0xEFu && scrollsave[0] < 0x10u || HIBYTE(scrollpos[0]) < (unsigned int)scrollsave[0] )
-  //здесь именно такой типкаст, иначе блокирует цикл выше, или не показывает HIGH SCORES, или время вылета табло с очками неверное
+  //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ, пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ HIGH SCORES, пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
     while ( HIBYTE(scrollpos[0]) > 0xEFu && (unsigned char)scrollsave[0] < 0x10u || HIBYTE(scrollpos[0]) < (unsigned char)scrollsave[0] )
     {
       CPP_scroll_tube(1, 0);
@@ -966,7 +966,7 @@ int CPP_new_game(void) //FINAL
     old_score[i] = 0;
     wins[i] = 0;
     the_score[i] = 0;
-    no_lives[i] = 3;  //число жизней у игрока в начале уровня
+    no_lives[i] = 3;  //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
   }
 
   level_no = 0;
@@ -1070,7 +1070,7 @@ u16 CPP_move_it(int a1, int a2, int a3, i16 a4, i16 a5, int a6) //FINAL
 
   for ( i = 0; i < *((u16 *)v21 + 2); ++i )
   {
-    //типкаст в signed - иначе сдвиги неправильно работают: корабли артефачат жутко
+    //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ signed - пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
     v11 = (signed)(*v19 * v16 - v19[1] * v17) >> 16;
     v10 = (signed)(v19[1] * v16 + *v19 * v17) >> 16;
     v9 =  (signed)(v10 * v13 + v19[2] * v12) >> 16;
@@ -2336,7 +2336,7 @@ int CPP_DrawASpriteMCGA(i16 a1, i16 a2, int a3) //FINAL
   ((char*)&DX)[0]=*(char*)(((char*)(SP<char>)a3)+4);
   ((char*)&DX)[1]=*(char*)(((char*)(SP<char>)a3)+5);
 
-  CPP_DrawSpriteVres256(DX /*dx*/ , a2 /*ecx*/, a1 /*ebx*/, (char*)(SP<char>)(i32)(*(UA<i32> *)(i32*)(SP<i32>)a3) /*esi*/ , 0, 0); //сложная передача аргументов функции!
+  CPP_DrawSpriteVres256(DX /*dx*/ , a2 /*ecx*/, a1 /*ebx*/, (char*)(SP<char>)(i32)(*(UA<i32> *)(i32*)(SP<i32>)a3) /*esi*/ , 0, 0); //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ!
 
   return 0;
 }
@@ -2632,7 +2632,7 @@ u8 CPP_draw_game(void)
     }
     if ( level_no != 3 )
     {
-      CPP_DrawBoxBPP(160 * i, 20, 3 * (*(UA<i32> *)((char *) dword_256784 + 30 * i) >> 16), 2, 15, 1); //рисует полоску под табло игрока
+      CPP_DrawBoxBPP(160 * i, 20, 3 * (*(UA<i32> *)((char *) dword_256784 + 30 * i) >> 16), 2, 15, 1); //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 
       v10 = the_score[i];
       v11 = i;
@@ -3825,11 +3825,11 @@ int CPP_new_starfield(i16 a1, int a2) //FINAL
   v7 = 0;
   while ( v8 )
   {
-    v6 = ((signed)(sintable[v9] * sts[2 * v7]) >> 10) / (v5 + 57) + scroll_x; //здесь signed! иначе звёзды рисуются только в правой верхней четверти экрана!
+    v6 = ((signed)(sintable[v9] * sts[2 * v7]) >> 10) / (v5 + 57) + scroll_x; //пїЅпїЅпїЅпїЅпїЅ signed! пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ!
 
     if ( (v6 >= 0) && (v6 < vec_window_width) )
     {
-      v4 = scroll_y - ((signed)(costable[v9] * sts[2 * v7 + 1]) >> 10) / (v5 + 57); //тоже signed
+      v4 = scroll_y - ((signed)(costable[v9] * sts[2 * v7 + 1]) >> 10) / (v5 + 57); //пїЅпїЅпїЅпїЅ signed
       if ( (v4 >= 0) && (v4 < vec_window_height) && (!*(u8 *)(SP<u8>)(v6 + v4 * vec_screen_width + vec_screen)) )
       {
 
@@ -4015,7 +4015,7 @@ int CPP_do_tube(void) //FINAL
 //  unsigned int v1;
 
   int result; // eax
-  signed char v3; // [esp+4h] [ebp-2Ch]         добавил signed
+  signed char v3; // [esp+4h] [ebp-2Ch]         пїЅпїЅпїЅпїЅпїЅпїЅпїЅ signed
   u8 v4; // [esp+8h] [ebp-28h]
   u8 v5; // [esp+Ch] [ebp-24h]
   _BOOL1 v6; // [esp+10h] [ebp-20h]
@@ -4063,7 +4063,7 @@ int CPP_do_tube(void) //FINAL
         {
           while ( 1 )
           {
-            v3 = scrollsave[i];          //немного переписал, иначе не выходило из цикла (v6 не была равна 0)
+            v3 = scrollsave[i];          //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ (v6 пїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ 0)
             v5 = HIBYTE(scrollpos[i]);
             v4 = v3 + 8;
 
@@ -4737,10 +4737,10 @@ u8 CPP_do_aliens(void)
           v76 = v77;
           if ( v77 >= 0x7800u )
           {
-            if ( v77 < 0x8000 ) //if ( v77 - 0x8000 > v77 ) кольцевая арифметика
+            if ( v77 < 0x8000 ) //if ( v77 - 0x8000 > v77 ) пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
               HIWORD(v76) = 1;
           }
-          else if ( v77 >= 0x8000 ) //if ( v77 + 0x8000 < v77 ) кольцевая арифметика
+          else if ( v77 >= 0x8000 ) //if ( v77 + 0x8000 < v77 ) пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
           {
             v76 = v77 - 0x10000;
           }
@@ -5603,7 +5603,7 @@ int CPP_quick_sort_ships(int a1, i16 a2) //FINAL
     v6 = a1;
     for ( i = a1 + 1; i <= a2; ++i )
     {
-    //if ( *(UA<u16> *)(draw_items[i] + 6) > *(UA<u16> *)(draw_items[(i16)a1] + 6) ) //это бредовое условие вылетает в сегфолт
+    //if ( *(UA<u16> *)(draw_items[i] + 6) > *(UA<u16> *)(draw_items[(i16)a1] + 6) ) //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ
       if(*(UA<u16> *)&draw_items[i+6]>*(UA<u16> *)&draw_items[(i16)a1+6]) //fix
       {
         v4 = draw_items[++v6];
@@ -8052,7 +8052,7 @@ int CPP_smart_bomb(u8 a3)
 //#pragma GCC optimize ("no-tree-pre")
 //#pragma GCC optimize ("no-tree-dominator-opts")
 
-int CPP_do_players_ships(void) //Пересекающиеся указатели, не давали выставить маскимальную оптимизацию: dword_25678D и dword_256791.
+int CPP_do_players_ships(void) //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: dword_25678D пїЅ dword_256791.
 {
   int result; // eax
   unsigned int *v3; // ebx
@@ -8107,7 +8107,7 @@ int CPP_do_players_ships(void) //Пересекающиеся указатели, не давали выставить м
   int v52; // [esp+10h] [ebp-24h]
   int v53; // [esp+10h] [ebp-24h]
 
-  /*int*/ char  v54; // [esp+1Ch] [ebp-18h]  //ранее значение этой переменной подменялось, если она была char. Возможно, была порча памяти?
+  /*int*/ char  v54; // [esp+1Ch] [ebp-18h]  //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅ char. пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ?
 
   char v55[4]; // [esp+20h] [ebp-14h] BYREF
   char v56[4]; // [esp+24h] [ebp-10h] BYREF
@@ -8131,7 +8131,7 @@ int CPP_do_players_ships(void) //Пересекающиеся указатели, не давали выставить м
       v54 = CPP_do_player_blk_collision(/*(unsigned int *)a1, a2,*/  i, (u8*)v58, (u8*)v57, (u8*)v56, (u8*)v55);
       CPP_do_contact_blocks();
 
-      if ( !v54 ) //ранее это условие не выполнялось, если v54 - char.  Была порча памяти? Спасало глобальное объявление, либо int
+      if ( !v54 ) //пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ v54 - char.  пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ? пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅпїЅпїЅ int
       {
         if ( joysx[i] )
         {
@@ -8218,7 +8218,7 @@ int CPP_do_players_ships(void) //Пересекающиеся указатели, не давали выставить м
         *((u16 *) dword_256780 + 15 * i) = 0;
 
 //++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-      if ( !v54 ) //это условие выполняется!
+      if ( !v54 ) //пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ!
       {
         *((u8 *) dword_256791 + 30 * i + 2) += *((u8 *) dword_256791 + 30 * i) * -LOBYTE(joysy[i]);
 
@@ -8428,7 +8428,7 @@ char CPP_control_game(void) //FINAL
 
   ascii = inkey_asckey[(u8)Inkey];
 
-  CPP_read_digistick(/*ascii*/ ); //только присвоения
+  CPP_read_digistick(/*ascii*/ ); //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
   joysx[0] = joyx; //?
   joysy[0] = joyy; //?
@@ -8487,7 +8487,7 @@ char CPP_control_game(void) //FINAL
       }
 
       if ( byte_2B37E6 )
-        ++byte_25677F[0];  // ++byte_25677F;  //не совсем уверен что верно
+        ++byte_25677F[0];  // ++byte_25677F;  //пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 
       if ( byte_2B37D2 )
         blk_collision = 1;
@@ -8637,7 +8637,7 @@ void CPP_read_digistick(void) //FINAL
   i16 v5; // ax
   i16 v6; // ax
 
-//запрещаем джойстик, но кое-какие присвоения отсюда возьмём
+//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ, пїЅпїЅ пїЅпїЅпїЅ-пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 /*
   if ( word_1A5502 )
   {
@@ -8922,7 +8922,7 @@ int CPP_tunnel_table(void) //FINAL
   v13 = 36; //0x24
   v12 = 64; //0x40
 
-  int V[6]; //хранит координаты вершин треугольника
+  int V[6]; //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 
   for ( i = 0; i < 256 ; ++i )
   {
@@ -8937,7 +8937,7 @@ int CPP_tunnel_table(void) //FINAL
     V[4] = 160; //X
     V[5] = 100; //Y
 
-    CPP_trig((int*)&V[4],(int*)&V[2],(int*)&V[0]); //рисует треугольник: 3 вершины - X,Y передаются попарно(структура?)
+    CPP_trig((int*)&V[4],(int*)&V[2],(int*)&V[0]); //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: 3 пїЅпїЅпїЅпїЅпїЅпїЅпїЅ - X,Y пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ(пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ?)
   }
 
   ToScreen(); //qmemcpy((void *)0xA0000, (const void *)WScreen, 0xFA00u);
@@ -8966,7 +8966,7 @@ int CPP_tunnel_table(void) //FINAL
       V[4] = 160;
       V[5] = 100;
 
-      CPP_trig((int*)&V[4],(int*)&V[2],(int*)&V[0]); //рисует треугольник: 3 вершины - X,Y передаются попарно(структура?)
+      CPP_trig((int*)&V[4],(int*)&V[2],(int*)&V[0]); //пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ: 3 пїЅпїЅпїЅпїЅпїЅпїЅпїЅ - X,Y пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ(пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ?)
     }
   }
 
@@ -9414,7 +9414,7 @@ void CPP_load_all_3d_files(void) //FINAL
 
 void CPP_setup_host(void)
 {
-//  CPP_FadePalette256(0, 0x10u, 0); //гашение DOS'овской консоли - здесь это не нужно
+//  CPP_FadePalette256(0, 0x10u, 0); //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ DOS'пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ - пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 
   ScreenMode = 1;
 
@@ -9501,7 +9501,7 @@ void CPP_InitSound(void)
 
 void CPP_calibrate_digistick(void) //FINAL
 {
- word_1A5502 = 0; //джойстик запрещён
+ word_1A5502 = 0; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 }
 
 void CPP_setup_a_sprite(unsigned int a1, unsigned int a2, unsigned int a3) //FINAL
@@ -9530,7 +9530,7 @@ void CPP_setup_a_sprite(unsigned int a1, unsigned int a2, unsigned int a3) //FIN
 
 void *CPP_MyAlloc(int a2) //FINAL
 {
- void *r=Calloc(a2,1); //выделяем память
+ void *r=Calloc(a2,1); //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ
 // printf("alloc 0x%016llx\n",r);
  return r;
 }
@@ -9571,8 +9571,8 @@ int CPP_LoadData(char *a3) //FINAL
 
     if ( (unsigned)CPP_LoadFileAt(a3, **(SP<char>)((uintptr_t)a3 + 28)) != *(UA<u32> *)(a3 + 36) )
     {
-      **(SP<u32>)(a3 + 28) = (void*)0; //присвоение 0
-      **(SP<u32>)(a3 + 32) = (void*)0; //присвоение 0
+      **(SP<u32>)(a3 + 28) = (void*)0; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 0
+      **(SP<u32>)(a3 + 32) = (void*)0; //пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 0
       *(UA<u32> *)(a3 + 36) = 0;
       return 0;
     }
@@ -9666,7 +9666,7 @@ FILE *CPP_MyOpen(char *a1, int a2) //FINAL
 
   char ffn[256]={0};
 
-  #if defined(__linux__) || defined(__EMSCRIPTEN__)
+  #if defined(__linux__) || defined(__EMSCRIPTEN__) || defined(__PSP__)
 
   fixfilename(ffn,a1);
 
@@ -9745,17 +9745,17 @@ void CPP_SetupScreenMCGA(u8 *a1) //SDL2
 
  SDL_ShowCursor(SDL_DISABLE);
 
-//OldVideoMode =3; //text mode #3 при выходе из игры
+//OldVideoMode =3; //text mode #3 пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅ
 
   ScreenWidth = 320;
   ScreenHeight = 200;
 
-//  CPP_SetPalette256(a1); //не нужно
+//  CPP_SetPalette256(a1); //пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 
     memset(Palette,0,sizeof(Palette));
     memset(PAL16,0,sizeof(PAL16));
 
-//  SetMouseLimits(); //не нужно
+//  SetMouseLimits(); //пїЅпїЅ пїЅпїЅпїЅпїЅпїЅ
 
     CPP_SetGraphicsWindow(0, 0, 320, 200);
 }

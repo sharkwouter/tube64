@@ -1,4 +1,4 @@
-#if defined(__linux__) || defined(__EMSCRIPTEN__)
+#if defined(__linux__) || defined(__EMSCRIPTEN__) || defined(__PSP__)
 
 #include <unistd.h>
 #include <fcntl.h>
@@ -16,7 +16,7 @@ HMIDISTRM mpu_stream=0;
 
 static void OutMIDI(u32 Data)
 {
- #if defined(__linux__) || defined(__EMSCRIPTEN__)
+ #if defined(__linux__) || defined(__EMSCRIPTEN__) || defined(__PSP__)
 
  write(fmidi,&Data,3);
 
@@ -27,7 +27,7 @@ static void OutMIDI(u32 Data)
  #endif
 }
 
-static void MIDI_Clear(void) //Очистка MPU401
+static void MIDI_Clear(void) //пїЅпїЅпїЅпїЅпїЅпїЅпїЅ MPU401
 {
  for(int i=0;i<16;i++)
  {
@@ -39,7 +39,7 @@ static void MIDI_Clear(void) //Очистка MPU401
 
 static void MIDI_Open(void)
 {
- #if defined(__linux__) || defined(__EMSCRIPTEN__)
+ #if defined(__linux__) || defined(__EMSCRIPTEN__) || defined(__PSP__)
 
  fmidi=open("/dev/snd/midiC2D0",O_WRONLY);
  if(fmidi<0)
@@ -66,7 +66,7 @@ static void MIDI_Close(void)
 {
  MIDI_Clear();
 
- #if defined(__linux__) || defined(__EMSCRIPTEN__)
+ #if defined(__linux__) || defined(__EMSCRIPTEN__) || defined(__PSP__)
 
  close(fmidi);
 
